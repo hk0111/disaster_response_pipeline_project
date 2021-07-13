@@ -7,46 +7,23 @@ from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
 from sqlalchemy import create_engine
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
-from nltk.corpus import stopwords
-
-nltk.download(['stopwords', 'wordnet', 'punkt'], quiet=True)
+from utils import tokenize
 
 app = Flask(__name__)
-
-def tokenize(text):
-    '''
-    Processes text to list of tokens
-    
-    INPUT:
-    text
-    
-    OUTPUT:
-    list - tokens generated from the text
-    '''
-    
-    # normalize and tokenize text
-    tokens = word_tokenize(text.lower())
-    
-    # lemmatize and remove stopwords
-    tokens = [WordNetLemmatizer().lemmatize(word) for word in tokens if word not in stopwords.words('english')]
-    
-    return tokens
 
 # load data
 engine = create_engine('sqlite:///data/DisasterResponse.db')
 df = pd.read_sql_table('disaster_response', engine)
 
 # load model
-model = joblib.load("models/classifier.pkl")
-
+model = joblib.load("models/classifier.pkl") 
 
 # index webpage displays cool visuals and receives user input text for model
 @app.route('/')
 @app.route('/index')
 def index():
-    
+
+
     # extract data needed for visuals
     # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df['genre'].value_counts()
@@ -87,7 +64,7 @@ def index():
 @app.route('/go')
 def go():
     # save user input in query
-    query = request.args.get('query', '') 
+    query = request.args.get('query', '')
 
     # use model to predict classification for query
     classification_labels = model.predict([query])[0]
@@ -99,11 +76,3 @@ def go():
         query=query,
         classification_result=classification_results
     )
-
-
-def main():
-    app.run(host='0.0.0.0', port=3001, debug=True)
-
-
-if __name__ == '__main__':
-    main()

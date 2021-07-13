@@ -1,21 +1,16 @@
 import sys
-import nltk
 import numpy
 import pandas as pd
 import joblib
 from sqlalchemy import create_engine
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
-from nltk.corpus import stopwords
-from sklearn.metrics import confusion_matrix, classification_report, precision_score, recall_score
+from sklearn.metrics import classification_report
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.pipeline import Pipeline, FeatureUnion
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer, TfidfVectorizer
+from sklearn.pipeline import Pipeline
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.decomposition import TruncatedSVD
-
-nltk.download(['stopwords', 'wordnet', 'punkt'], quiet=True)
+from utils import tokenize
 
 def load_data(database_filepath):
     '''
@@ -29,27 +24,6 @@ def load_data(database_filepath):
     Y = df.drop(['message', 'genre'], axis=1).values
 
     return X, Y, category_names
-
-
-def tokenize(text):
-    '''
-    Processes text to list of tokens
-    
-    INPUT:
-    text
-    
-    OUTPUT:
-    list - tokens generated from the text
-    '''
-    
-    # normalize and tokenize text
-    tokens = word_tokenize(text.lower())
-    
-    # lemmatize and remove stopwords
-    tokens = [WordNetLemmatizer().lemmatize(word) for word in tokens if word not in stopwords.words('english')]
-    
-    return tokens
-
 
 def build_model():
     '''
