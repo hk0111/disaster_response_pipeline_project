@@ -16,6 +16,7 @@ def load_data(database_filepath):
     '''
     Load Predictor, Response, and Category Names from sqlite database
     '''
+    # read data from SQL database
     engine = create_engine(f'sqlite:///{database_filepath}')
     df = pd.read_sql('SELECT * FROM disaster_response', engine)
 
@@ -46,6 +47,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
     Evaluate model on test data
     '''
     Y_pred = model.predict(X_test)
+    # show classification report for each feature
     for i in range(Y_test.shape[1]):
         print(category_names[i])
         print(classification_report(Y_test[:, i], Y_pred[:, i], zero_division=0))
